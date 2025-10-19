@@ -1,43 +1,54 @@
 import os
 import time
-import sys
-bufor_path='./buforSerwera'
-client_file='plikKlienta'
+import errno
+
+bd = "./bufor.txt"
+ld = "./lockfile"
+end = ";"
+c_id = os.getpid()
+cf = f"client{c_id}.txt"
 
 def client():
-    # os.open()
-    lcf = list_client_files('./')
-    create_client_files(lcf)
-    # print(sys.argv[0])
+    create_lockfile()
 
+    print("Message to the server (end with new line): ")
+    lines = []
+    while True:
+        line = input()
+        if line == "":
+            break
+        lines.append(line)
+    message = "\n".join(lines)
 
-def list_client_files(path):
-    ld = os.listdir(path)
-    cf_list = []
-    for f in ld:
-        if f.startswith('plikKlienta'):
-            cf_list.append(f)
-    return cf_list
+    with open(bd, "w") as bufor:
+        bufor.write(cf + "\n")
+        bufor.write(message + "\n")
+        bufor.write(end + "\n")
 
-def create_client_files(l):
-    if len(l) == 0:
-        fd = os.open(f'{client_file}1', os.O_CREAT)
-        os.close(fd)
-    else:
-        nl = []
-        for c in l:
-            x = c.strip('plikKlienta')
-            nl.append(int(x))
-        print(nl)
+    print("Message sent!")
 
-        for i in range(int(max(nl))):
-            filename = f'{client_file}{i+1}'
-            if os.path.exists(filename):
-                print("Istnieje: " + filename)
-            else:
-                print("Nie istnieje: " + filename)
-                fd = os.open(filename, os.O_CREAT)
-                os.close(fd)
-                break
+    print("Waiting for response...")
+    while not os.path.exists(cf):
+        time.sleep(1)
+
+    with open(cf, "r") as client_file:
+        response = client_file.read().replace(end, "").strip()
+        print(f"\nServer's response:\n{response}")
+        time.sleep(3)
+
+    os.remove(cf)
+
+def create_lockfile():
+    while True:
+        try:
+            lockfile = os.open(path=ld,
+                               flags=os.O_CREAT | os.O_EXCL | os.O_RDWR)
+            os.close(lockfile)
+            break
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
+            print("Server's busy, please wait...")
+            time.sleep(5)
 
 client()

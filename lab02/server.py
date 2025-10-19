@@ -1,36 +1,47 @@
 import os
 import time
-f_path = './dane.txt'
-r_path = './wyniki.txt'
 
-def detect_file_change(file_path, interval=1):
-    if not os.path.exists(file_path):
-        f = os.open(path=file_path, flags= os.O_CREAT, mode=0o666)
-        os.close(f)
+bd = "bufor.txt"
+ld = "lockfile"
+end = ";"
 
-    last_modified = os.path.getmtime(file_path)
-    while True:
-        current_modified = os.path.getmtime(file_path)
-        if current_modified != last_modified:
-            fd = os.open(path=file_path, flags=os.O_RDONLY, mode=0o666)
-            fd_length = os.path.getsize(file_path)
-            number = os.read(fd, fd_length).decode()
-            if len(number) == 0:
-                print("Plik 'dane.txt' jest pusty!")
-            else:
-                calculated_number = calculate(int(number))
-                save_result(r_path, calculated_number)
-                last_modified = current_modified
-                os.close(fd)
-        time.sleep(interval)
+print("Server is running...")
 
+while True:
+    if os.path.exists(ld) and os.path.exists(bd) and os.path.getsize(bd) > 0:
+        try:
+            with open(bd, "r") as bufor:
+                lines = bufor.readlines()
 
-def calculate(x):
-    return x**2 + x - 1
+            # pierwsza linia to nazwa pliku klienta
+            cf = lines[0].strip()
+            # pozostałe linie to wiadomość (bez znacznika końca)
+            message_lines = [line.strip() for line in lines]
+            message = "\n".join(message_lines)
 
-def save_result(result_path, result):
-    fd = os.open(path=result_path, flags=os.O_RDWR | os.O_CREAT, mode=0o666)
-    os.write(fd, str(result).encode())
-    os.close(fd)
+            print("Received message:\n")
+            print(f"{message}\n")
 
-detect_file_change('dane.txt')
+            print("Message to client (end with new line): ")
+            response_lines = []
+            while True:
+                line = input()
+                if line == "":
+                    break
+                response_lines.append(line)
+            response = "\n".join(response_lines)
+
+            with open(cf, "w") as f:
+                f.write(response + "\n")
+                f.write(end + "\n")
+
+            print(f"Response sent.")
+
+            os.remove(ld)
+            with open(bd, "w") as bufor:
+                bufor.write("")
+
+        except Exception as e:
+            print(f"Error: {e}")
+
+    time.sleep(1)
