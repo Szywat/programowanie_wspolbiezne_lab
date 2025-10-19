@@ -1,7 +1,7 @@
 import os
 import time
 
-bd = "bufor.txt"
+bd = "bufor_serwera.txt"
 ld = "lockfile"
 end = ";"
 

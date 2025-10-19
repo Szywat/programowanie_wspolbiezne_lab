@@ -2,11 +2,11 @@ import os
 import time
 import errno
 
-bd = "./bufor.txt"
+bd = "./bufor_serwera.txt"
 ld = "./lockfile"
 end = ";"
 c_id = os.getpid()
-cf = f"client{c_id}.txt"
+cf = f"plikKlienta{c_id}.txt"
 
 def client():
     create_lockfile()
