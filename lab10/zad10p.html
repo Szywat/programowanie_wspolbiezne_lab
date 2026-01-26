@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 25.8.2.2 (Windows)"/>
+	<meta name="created" content="2025-12-15T01:26:33.340372600"/>
+	<meta name="changed" content="2025-12-15T01:32:54.199154500"/>
+</head>
+<body lang="pl-PL" dir="ltr"><p><strong>Zadanie 10.</strong>&nbsp; &nbsp;&nbsp;</p>
+<p>W tym zadaniu ważne są dwa elementy:</p>
+<ul>
+	<li><p style="margin-bottom: 0cm">zbadanie przyśpieszenia, jakie
+	możemy uzyskać przez zrównoleglenie obliczeń - w Pythonie ze
+	względu na GIL użyjemy wieloprocesowości (moduł multithreading)
+	zamiast bardziej naturalnej wielowatkowosci 
+	</p></li>
+	<li><p>użycie narzędzi nieco automatyzujących zrównoleglanie
+	obliczeń - w Pythonie będzie to pula procesów
+	(multiprocessing.Pool) 
+	</p></li>
+</ul>
+<p>Punktem wyjścia jest sekwencyjny program&nbsp;<a href="https://inf.ug.edu.pl/~pmp/Z/Wspolb21P/pierwszePlus.py" target="_blank">pierwszePlus.py</a>&nbsp;który
+tworzy listę&nbsp; liczb pierwszych występujących w zadanym
+przedziale liczbowym. Program ten działa tak, że</p>
+<ol>
+	<li><p style="margin-bottom: 0cm">najpierw tworzy listę liczb
+	pierwszych mniejszych lub równych pierwiastkowi kwadratowemu z
+	prawego końca przedziału 
+	</p></li>
+	<li><p>następnie wyszukuje liczby pierwsze z zadanego przedziału
+	sprawdzając podzielność tylko przez liczby pierwsze wyznaczone w
+	pierwszym kroku&nbsp; 
+	</p></li>
+</ol>
+<p>Ten właśnie program jest punktem wyjścia do innego obliczenia:
+wyznaczyć listę&nbsp;<strong>bliźniaczych liczb
+pierwszych</strong>&nbsp;występujących w zadanym przedziale
+liczbowym. Bliźniacze liczby pierwsze to pary liczb (p, p+2) takie,
+że p i p+2 są liczbami pierwszymi.&nbsp;</p>
+<p>Powyższe obliczenie mamy wykonać na dwa sposoby i&nbsp;<strong>porównać
+uzyskane czasy</strong>&nbsp;na dużym przedziale liczbowym:&nbsp;</p>
+<ul>
+	<li><p style="margin-bottom: 0cm">zwyczajnie sekwencyjnie oraz&nbsp;
+		</p></li>
+	<li><p>z wykorzystaniem równoległości.&nbsp; 
+	</p></li>
+</ul>
+<p>W Pythonie można uzyskać przyśpieszenie nie przez wielowątkowe
+obliczenie (ze względu na Global Interpreter Lock), ale przez
+obliczenie&nbsp;<strong>wieloprocesowe</strong>&nbsp;wykorzystując
+moduł&nbsp;<a href="https://docs.python.org/3/library/multiprocessing.html" target="_blank">multiprocessing</a>&nbsp;a
+w nim klasę Pool i funkcję imap (lub map lub starmap itp.), przy
+pomocy których możemy&nbsp; rozbić&nbsp; drugi krok obliczenia na
+kilka podzadań wykonywanych przez równoległe procesy. Należy
+wykonać pomiary czasu (na dużych danych) sprawdzające, czy
+uzyskano przyśpieszenie i dla jakiej ilości równoległych
+podzadań. Powinno pojawić się przyspieszenie.</p>
+<p>Pewnym problemem do rozwiązania będzie wpisywanie&nbsp;
+bliźniaczych liczb pierwszych uzyskanych w utworzonych równoległych
+Można w tym celu wykorzystać fakt, że funkcje map, imap itd. klasy
+Pool mogą przekazać wynik w zwracanej wartości (to najprostsze
+rozwiazanie, chociaż niekoniecznie najefektywniejsze). Można też w
+tym celu wykorzystać mechanizmy pamięci wspólnej modułu
+multiprocessing: najefektywniejsze czasowo będzie prawdopodobnie
+<font face="Courier New, monospace">Array</font> i ewentualnie <font face="Courier New, monospace">Value</font>,
+ale  można też spróbować użyć kolejek <font face="Courier New, monospace">multiprocessing.Queue</font>
+lub mechanizmu <font face="Courier New, monospace">Manager</font>.
+Użycie wspólnej pamięci <font face="Courier New, monospace">multiprocessing.Array</font>
+jest o tyle trudne, że trzeba z góry określić rozmiar tak
+tworzonej współdzielonej tablicy. Na szczęście znane jest
+ograniczenie na ilość liczb pierwszych w przedziale od 1 do x: jest
+ich nie więcej niż 6/5*x/(ln x)procesach na jedną wspólną listę.
+</p>
+<p>W przypadku wykorzystywania innego środowiska niż Python można
+użyć wielowątkowego odpowiednika modułu multiprocessing. Zarówno
+w Pythonie jak i w innych środowiskach, staramy się użyć
+mechanizmów wyższego rzędu&quot; (takich jak moduł&nbsp;
+multiprocessing) do&nbsp; rozbicia obliczenia na procesy/wątki
+współbieżne. W Javie są dostępne rozwiazania podobne do Pool, w
+C/C++ biblioteka OpenMP daje podobne możliwości.</p>
+<p>Wskazówki: wykład &nbsp;<a href="https://inf.ug.edu.pl/~pmp/Z/Wspolb21P/wspolb8QM.pdf" target="_blank">Mechanizmy
+&quot;wyższego poziomu&quot;</a>, przykłady z wykładu: &nbsp;<a href="https://inf.ug.edu.pl/~pmp/Z/Wspolb21P/pool1.py" target="_blank">pula
+procesów multiprocessing.Pool</a>,&nbsp;&nbsp;<a href="https://inf.ug.edu.pl/~pmp/Z/Wspolb21P/shared.py" target="_blank">współdzielona
+pamięć (Array, Value)</a></p>
+<p><br/>
+<br/>
+
+</p>
+<p><br/>
+<br/>
+
+</p>
+</body>
+</html>
